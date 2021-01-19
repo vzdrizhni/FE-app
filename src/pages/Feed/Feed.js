@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import openSocket from 'socket.io-client'
 
 import Post from '../../components/Feed/Post/Post';
 import Button from '../../components/Button/Button';
@@ -25,7 +26,8 @@ class Feed extends Component {
     fetch('http://localhost:8080/auth/status', {
       headers: {
         Authorization: 'Bearer ' + this.props.token
-      }
+      },
+      mode: 'no-cors'
     })
       .then(res => {
         if (res.status !== 200) {
@@ -39,6 +41,16 @@ class Feed extends Component {
       .catch(this.catchError);
 
     this.loadPosts();
+    openSocket('http://localhost:8080', {
+      withCredentials: true,
+      extraHeaders: {
+        "my-custom-header": "abcd",
+      },
+      headers: {
+        Authorization: 'Bearer ' + this.props.token,
+        'Content-Type': 'application/json'
+      }
+    })
   }
 
   loadPosts = direction => {
